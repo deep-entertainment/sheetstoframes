@@ -73,6 +73,7 @@ func import_spritesheets(
 			".%s" % sheet.get_extension()
 		)
 		_frames.add_animation(_sheet_name)
+		_frames.set_animation_speed(_sheet_name, options.fps)
 		
 		for row in range(0, options.rows):
 			for col in range (0, options.columns):
@@ -107,6 +108,7 @@ func _on_import_files_selected(files: PoolStringArray):
 	for child in _grid_container.get_children():
 		if not child.is_in_group("_headers"):
 			_grid_container.remove_child(child)
+	var _first_node = null
 	for file in _selected_files:
 		var _node_name = _create_node_name(file)
 		var _sheet_label = Label.new()
@@ -119,18 +121,76 @@ func _on_import_files_selected(files: PoolStringArray):
 		_sheet_cols.value = 5
 		_sheet_cols.allow_greater = true
 		_grid_container.add_child(_sheet_cols)
+		_sheet_cols.get_line_edit().connect(
+			"focus_entered", 
+			self, 
+			"_select_all", 
+			[_sheet_cols.get_line_edit()]
+		)
+		_sheet_cols.get_line_edit().connect(
+			"gui_input", 
+			self, 
+			"_lineedit_gui_input", 
+			[_sheet_cols.get_line_edit()]
+		)
+		
+		if _first_node == null:
+			_first_node = _sheet_cols.get_line_edit()
 		
 		var _sheet_rows = SpinBox.new()
 		_sheet_rows.name = "%s_Rows" % _node_name
 		_sheet_rows.value = 5
 		_sheet_rows.allow_greater = true
 		_grid_container.add_child(_sheet_rows)
+		_sheet_rows.get_line_edit().connect(
+			"focus_entered", 
+			self, 
+			"_select_all", 
+			[_sheet_rows.get_line_edit()]
+		)
+		_sheet_rows.get_line_edit().connect(
+			"gui_input", 
+			self, 
+			"_lineedit_gui_input", 
+			[_sheet_rows.get_line_edit()]
+		)
 		
 		var _sheet_max_frames = SpinBox.new()
 		_sheet_max_frames.name = "%s_MaxFrames" % _node_name
 		_sheet_max_frames.value = 25
 		_sheet_max_frames.allow_greater = true
 		_grid_container.add_child(_sheet_max_frames)
+		_sheet_max_frames.get_line_edit().connect(
+			"focus_entered", 
+			self, 
+			"_select_all", 
+			[_sheet_max_frames.get_line_edit()]
+		)
+		_sheet_max_frames.get_line_edit().connect(
+			"gui_input", 
+			self, 
+			"_lineedit_gui_input", 
+			[_sheet_max_frames.get_line_edit()]
+		)
+		
+		var _sheet_max_fps = SpinBox.new()
+		_sheet_max_fps.name = "%s_FPS" % _node_name
+		_sheet_max_fps.value = 5
+		_sheet_max_fps.step = 0.1
+		_sheet_max_fps.allow_greater = true
+		_grid_container.add_child(_sheet_max_fps)
+		_sheet_max_fps.get_line_edit().connect(
+			"focus_entered", 
+			self, 
+			"_select_all", 
+			[_sheet_max_fps.get_line_edit()]
+		)
+		_sheet_max_fps.get_line_edit().connect(
+			"gui_input", 
+			self, 
+			"_lineedit_gui_input", 
+			[_sheet_max_fps.get_line_edit()]
+		)
 		
 		_sheet_cols.connect(
 			"value_changed", 
@@ -148,6 +208,7 @@ func _on_import_files_selected(files: PoolStringArray):
 		
 		
 	$ImportSettingsDialog.popup_centered_minsize()
+	_first_node.grab_focus()
 
 
 func _on_ImportDialog_CancelButton_pressed() -> void:
@@ -226,6 +287,8 @@ func _on_LoadPresetButton_pressed() -> void:
 					_preset.sheets[file].rows
 			_grid_container.get_node("%s_MaxFrames" % _node_name).value = \
 					_preset.sheets[file].max_frames
+			_grid_container.get_node("%s_FPS" % _node_name).value = \
+					_preset.sheets[file].fps
 
 
 func _on_SavePresetButton_pressed() -> void:
@@ -275,4 +338,19 @@ func _get_options() -> Dictionary:
 					"%s_MaxFrames" % _node_name
 				).value
 		)
+		options[_filename].fps = int(
+			$ImportSettingsDialog/VBoxContainer/MarginContainer\
+				/ScrollContainer/GridContainer.get_node(
+					"%s_FPS" % _node_name
+				).value
+		)
 	return options
+
+
+func _select_all(line: LineEdit) -> void:
+	line.select_all()
+
+
+func _lineedit_gui_input(event: InputEvent, line: LineEdit) -> void:
+	if event is InputEventMouseButton and not event.is_pressed():
+		_select_all(line)
