@@ -12,10 +12,10 @@ Start the importer from the tools menu and select any number of Spritesheet file
 
 If the last row of the sheet contains fewer images than the number of columns, you can lower the maximum number of frames, that will be imported.
 
-![[docs/settings.png]]
+![Import settings](docs/settings.png)
 
 To help recreating spriteframes from multiple spritesheets, you can store the settings into presets and load them when you need to recreate the spriteframes the next time.
 
 Afterwards, select the SpriteFrames resource file and the addon will convert all spritesheets into animations in the SpriteFrames:
 
-![[docs/spriteframes.png]]
+![Converting](docs/spriteframes.png)
