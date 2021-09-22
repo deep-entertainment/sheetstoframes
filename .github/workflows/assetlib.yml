@@ -16,6 +16,6 @@ jobs:
               with:
                 username: deepgames
                 password: ${{ secrets.ASSET_STORE_PASSWORD }}
-                assetId: 4200
+                assetId: 1031
 
 
