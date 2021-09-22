@@ -9,3 +9,6 @@ export(int) var rows = 0
 
 # Maximum number of frames
 export(int) var max_frames = 0
+
+# Frames per second
+export(float) var fps = 0.0
